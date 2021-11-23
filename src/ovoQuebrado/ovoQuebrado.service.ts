@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { OvoQuebrado } from './ovoQUebrado.model';
+import { OvoQuebrado } from './ovoQuebrado.model';
 import { Model } from 'mongoose';
 import { AdicionarOvoQuebradoDto } from './dto/adicionar-ovo-quebrado.dto';
 import { AtualizarOvoQuebradoDto } from './dto/atualizar-ovo-quebrado.dto';
