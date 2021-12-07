@@ -6,16 +6,20 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { OvoQuebradoService } from './ovoQuebrado.service';
 import { AdicionarOvoQuebradoDto } from './dto/adicionar-ovo-quebrado.dto';
 import { AtualizarOvoQuebradoDto } from './dto/atualizar-ovo-quebrado.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('api/ovo_quebrado')
 export class OvoQuebradoController {
   constructor(private service: OvoQuebradoService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async obter() {
     return await this.service.obter();
   }
