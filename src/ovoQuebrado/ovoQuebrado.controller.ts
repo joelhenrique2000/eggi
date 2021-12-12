@@ -19,8 +19,8 @@ export class OvoQuebradoController {
   constructor(private service: OvoQuebradoService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async obter() {
+    console.log('asd');
     return await this.service.obter();
   }
 
