@@ -1,18 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { OvoQuebradoController } from './ovoQuebrado.controller';
-import { OvoQuebrado, OvoQuebradoSchema } from './ovoQuebrado.model';
+import { OvoQuebrado } from './ovoQuebrado.model';
 import { OvoQuebradoService } from './ovoQuebrado.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: OvoQuebrado.name,
-        schema: OvoQuebradoSchema,
-      },
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([OvoQuebrado])],
   controllers: [OvoQuebradoController],
   providers: [OvoQuebradoService],
 })

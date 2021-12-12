@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Usuario } from './usuario.model';
-import { Model } from 'mongoose';
 import { AdicionarUsuarioDto } from './dto/adicionar-usuario.dto';
 import { AtualizarUsuarioDto } from './dto/atualizar-usuario.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 interface Payload {
   email: string;
@@ -14,15 +14,15 @@ interface Payload {
 @Injectable()
 export class UsuarioService {
   constructor(
-    @InjectModel(Usuario.name)
-    private readonly UsuarioModel: Model<Usuario>,
+    @InjectRepository(Usuario)
+    private readonly usuarioRepository: Repository<Usuario>,
   ) {}
 
   async adicionar(adicionarUsuarioDto: AdicionarUsuarioDto): Promise<Usuario> {
-    const { email } = adicionarUsuarioDto;
+    const { email, senha } = adicionarUsuarioDto;
     adicionarUsuarioDto.email = email.toLowerCase();
-
-    return await new this.UsuarioModel(adicionarUsuarioDto).save();
+    adicionarUsuarioDto.senha = await bcrypt.hash(senha, 10);
+    return await this.usuarioRepository.save(adicionarUsuarioDto);
   }
 
   async validarSenha(senha: string, senhaHash: string): Promise<boolean> {
@@ -30,17 +30,21 @@ export class UsuarioService {
   }
 
   async obter(): Promise<Usuario[]> {
-    return await await this.UsuarioModel.find().exec();
+    return await this.usuarioRepository.find();
   }
 
   async obterPorId(id: string): Promise<Usuario> {
-    return await this.UsuarioModel.findById(id).exec();
+    return await this.usuarioRepository.findOne(id);
   }
 
   async obterPorLogin(loginDto: LoginDto): Promise<Usuario> {
     const { email, senha } = loginDto;
 
-    const usuario = await this.UsuarioModel.findOne({ email }).exec();
+    const usuario = await this.usuarioRepository.findOne({
+      where: {
+        email,
+      },
+    });
 
     if (!usuario) {
       throw new HttpException('Usuário não existe', HttpStatus.BAD_REQUEST);
@@ -55,17 +59,22 @@ export class UsuarioService {
   async obterPorPayload(payload: Payload): Promise<Usuario> {
     const { email } = payload;
 
-    return await this.UsuarioModel.findOne({ email }).exec();
+    return await this.usuarioRepository.findOne({
+      where: {
+        email,
+      },
+    });
   }
 
   async atualizar(
     id: string,
     atualizarUsuarioDto: AtualizarUsuarioDto,
   ): Promise<Usuario> {
-    return await this.UsuarioModel.findByIdAndUpdate(id, atualizarUsuarioDto);
+    await this.usuarioRepository.update(id, atualizarUsuarioDto);
+    return await this.usuarioRepository.findOne(id);
   }
 
-  async remover(id: string): Promise<Usuario> {
-    return await this.UsuarioModel.findByIdAndDelete(id).exec();
+  async remover(id: string): Promise<boolean> {
+    return (await this.usuarioRepository.delete(id)).affected > 0 && true;
   }
 }

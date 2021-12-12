@@ -1,5 +1,6 @@
 import {
   Body,
+  CacheInterceptor,
   Controller,
   Delete,
   Get,
@@ -7,6 +8,7 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { OvoQuebradoService } from './ovoQuebrado.service';
 import { AdicionarOvoQuebradoDto } from './dto/adicionar-ovo-quebrado.dto';
@@ -15,12 +17,12 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('api/ovo_quebrado')
+// @UseInterceptors(CacheInterceptor)
 export class OvoQuebradoController {
   constructor(private service: OvoQuebradoService) {}
 
   @Get()
   async obter() {
-    console.log('asd');
     return await this.service.obter();
   }
 

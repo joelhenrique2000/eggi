@@ -1,21 +1,19 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-export type OvoQuebradoDocument = OvoQuebrado & Document;
-
-@Schema()
+@Entity()
 export class OvoQuebrado {
-  @Prop({ required: true })
+  @PrimaryGeneratedColumn()
+  id: string;
+
+  @Column()
   incubadora: string;
 
-  @Prop({ required: true })
+  @Column('float')
   temperatura: number;
 
-  @Prop({ required: true })
+  @Column('float')
   quantidade: number;
 
-  @Prop({ required: true })
+  @Column()
   createdAt: Date;
 }
-
-export const OvoQuebradoSchema = SchemaFactory.createForClass(OvoQuebrado);

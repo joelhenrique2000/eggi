@@ -1,29 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import * as bcrypt from 'bcrypt';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-export type UsuarioDocument = Usuario & Document;
-
-@Schema()
+@Entity()
 export class Usuario {
-  @Prop({ required: true })
+  @PrimaryGeneratedColumn()
+  id: string;
+
+  @Column()
   email: string;
 
-  @Prop({ required: true })
+  @Column()
   senha: string;
 }
-
-export const UsuarioSchema = SchemaFactory.createForClass(Usuario);
-
-UsuarioSchema.pre('save', async function (next) {
-  try {
-    if (!this.isModified('senha')) {
-      return next();
-    }
-    const hashed = await bcrypt.hash(this['senha'], 10);
-    this['senha'] = hashed;
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-});

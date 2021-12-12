@@ -1,45 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { OvoQuebrado } from './ovoQuebrado.model';
-import { Model } from 'mongoose';
 import { AdicionarOvoQuebradoDto } from './dto/adicionar-ovo-quebrado.dto';
 import { AtualizarOvoQuebradoDto } from './dto/atualizar-ovo-quebrado.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class OvoQuebradoService {
   constructor(
-    @InjectModel(OvoQuebrado.name)
-    private readonly OvoQuebradoModel: Model<OvoQuebrado>,
+    @InjectRepository(OvoQuebrado)
+    private readonly ovoQuebradoRepository: Repository<OvoQuebrado>,
   ) {}
 
   async adicionar(
     adicionarOvoQuebradoDto: AdicionarOvoQuebradoDto,
   ): Promise<OvoQuebrado> {
-    return await new this.OvoQuebradoModel({
-      ...adicionarOvoQuebradoDto,
-      createdAt: new Date(),
-    }).save();
+    adicionarOvoQuebradoDto.createdAt = new Date();
+    return await this.ovoQuebradoRepository.save(adicionarOvoQuebradoDto);
   }
 
   async obter(): Promise<OvoQuebrado[]> {
-    return await await this.OvoQuebradoModel.find().exec();
+    return await this.ovoQuebradoRepository.find();
   }
 
   async obterPorId(id: string): Promise<OvoQuebrado> {
-    return await this.OvoQuebradoModel.findById(id).exec();
+    return await this.ovoQuebradoRepository.findOne(id);
   }
 
   async atualizar(
     id: string,
     atualizarOvoQuebradoDto: AtualizarOvoQuebradoDto,
   ): Promise<OvoQuebrado> {
-    return await this.OvoQuebradoModel.findByIdAndUpdate(
-      id,
-      atualizarOvoQuebradoDto,
-    ).exec();
+    await this.ovoQuebradoRepository.update(id, atualizarOvoQuebradoDto);
+    return await this.ovoQuebradoRepository.findOne(id);
   }
 
-  async remover(id: string): Promise<OvoQuebrado> {
-    return await this.OvoQuebradoModel.findByIdAndDelete(id).exec();
+  async remover(id: string): Promise<boolean> {
+    return (await this.ovoQuebradoRepository.delete(id)).affected > 0 && true;
   }
 }

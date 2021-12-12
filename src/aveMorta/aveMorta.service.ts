@@ -1,45 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { AveMorta } from './aveMorta.model';
-import { Model } from 'mongoose';
 import { AdicionarAveMortaDto } from './dto/adicionar-ave-morta.dto';
 import { AtualizarAveMortaDto } from './dto/atualizar-ave-morta.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AveMortaService {
   constructor(
-    @InjectModel(AveMorta.name)
-    private readonly AveMortaModel: Model<AveMorta>,
+    @InjectRepository(AveMorta)
+    private readonly ovoQuebradoRepository: Repository<AveMorta>,
   ) {}
 
   async adicionar(
     adicionarAveMortaDto: AdicionarAveMortaDto,
   ): Promise<AveMorta> {
-    return await new this.AveMortaModel({
-      ...adicionarAveMortaDto,
-      createdAt: new Date(),
-    }).save();
+    adicionarAveMortaDto.createdAt = new Date();
+    return await this.ovoQuebradoRepository.save(adicionarAveMortaDto);
   }
 
   async obter(): Promise<AveMorta[]> {
-    return await await this.AveMortaModel.find().exec();
+    return await this.ovoQuebradoRepository.find();
   }
 
   async obterPorId(id: string): Promise<AveMorta> {
-    return await this.AveMortaModel.findById(id).exec();
+    return await this.ovoQuebradoRepository.findOne(id);
   }
 
   async atualizar(
     id: string,
     atualizarAveMortaDto: AtualizarAveMortaDto,
   ): Promise<AveMorta> {
-    return await this.AveMortaModel.findByIdAndUpdate(
-      id,
-      atualizarAveMortaDto,
-    ).exec();
+    await this.ovoQuebradoRepository.update(id, atualizarAveMortaDto);
+    return await this.ovoQuebradoRepository.findOne(id);
   }
 
-  async remover(id: string): Promise<AveMorta> {
-    return await this.AveMortaModel.findByIdAndDelete(id).exec();
+  async remover(id: string): Promise<boolean> {
+    return (await this.ovoQuebradoRepository.delete(id)).affected > 0 && true;
   }
 }

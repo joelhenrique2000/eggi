@@ -1,22 +1,35 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AveMortaModule } from './aveMorta/aveMorta.module';
 import { OvoQuebradoModule } from './ovoQuebrado/ovoQuebrado.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
-import { UsuarioService } from './usuario/usuario.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Usuario } from './usuario/usuario.model';
+import { AveMorta } from './aveMorta/aveMorta.model';
+import { OvoQuebrado } from './ovoQuebrado/ovoQuebrado.model';
 
 @Module({
   imports: [
+    CacheModule.register({
+      ttl: 5,
+      max: 10,
+    }),
     AveMortaModule,
     OvoQuebradoModule,
     UsuarioModule,
     AuthModule,
-    MongooseModule.forRoot(
-      'mongodb+srv://frangolino:frangolino@cluster0.mwiee.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-    ),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: '1234',
+      database: 'eggi',
+      entities: [Usuario, AveMorta, OvoQuebrado],
+      synchronize: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

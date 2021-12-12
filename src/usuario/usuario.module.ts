@@ -1,18 +1,16 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { CacheModule, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsuarioController } from './usuario.controller';
-import { Usuario, UsuarioSchema } from './usuario.model';
+import { Usuario } from './usuario.model';
 import { UsuarioService } from './usuario.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      {
-        name: Usuario.name,
-        schema: UsuarioSchema,
-      },
-    ]),
-    // UsuarioService,
+    CacheModule.register({
+      ttl: 5,
+      max: 10,
+    }),
+    TypeOrmModule.forFeature([Usuario]),
   ],
   controllers: [UsuarioController],
   providers: [UsuarioService],
