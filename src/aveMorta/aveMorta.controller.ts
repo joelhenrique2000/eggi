@@ -12,9 +12,9 @@ import {
 import { AveMortaService } from './aveMorta.service';
 import { AdicionarAveMortaDto } from './dto/adicionar-ave-morta.dto';
 import { AtualizarAveMortaDto } from './dto/atualizar-ave-morta.dto';
- 
+
 @Controller('api/ave_morta')
-// @UseInterceptors(CacheInterceptor)
+@UseInterceptors(CacheInterceptor)
 export class AveMortaController {
   constructor(private service: AveMortaService) {}
 

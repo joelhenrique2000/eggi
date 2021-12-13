@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('api/ovo_quebrado')
-// @UseInterceptors(CacheInterceptor)
+@UseInterceptors(CacheInterceptor)
 export class OvoQuebradoController {
   constructor(private service: OvoQuebradoService) {}
 
