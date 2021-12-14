@@ -32,9 +32,5 @@ export class AtualizarOvoQuebradoDto {
     message: 'A quantidade deve ser um número positivo.',
   })
   quantidade: number;
-  @IsDate({
-    message: 'deve inserir um data válida.',
-  })
-  @IsOptional()
   createdAt: Date;
 }
